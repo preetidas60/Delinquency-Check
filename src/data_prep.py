@@ -1,40 +1,27 @@
-import pandas as pd
 import os
+import pandas as pd
+from src.utils import path_user_excel, path_synthetic, path_amex_dir
 
-ROOT = os.path.dirname(os.path.dirname(__file__))
-DATA_DIR = os.path.join(ROOT, "data")
-
-def load_user_excel(path=None):
-    if path is None:
-        path = os.path.join(DATA_DIR, 'Credit Card Delinquency Watch.xlsx')
-    print('Loading user data from', path)
-    if not os.path.exists(path):
-        raise FileNotFoundError(path)
-    # the sample sheet in your Excel is 'Sample'
-    df = pd.read_excel(path, sheet_name='Sample')
+def load_user_sample():
+    p = path_user_excel()
+    if not os.path.exists(p):
+        raise FileNotFoundError(f"User sample not found at {p}")
+    df = pd.read_excel(p, sheet_name='Sample')
     return df
 
-def load_synthetic(path=None):
-    if path is None:
-        path = os.path.join(DATA_DIR, 'synthetic_indian_credit.csv')
-    print('Loading synthetic data from', path)
-    return pd.read_csv(path)
+def load_synthetic():
+    p = path_synthetic()
+    if not os.path.exists(p):
+        raise FileNotFoundError(f"Synthetic CSV not found at {p}")
+    return pd.read_csv(p)
 
-def main_preview():
-    print('\n-- User Excel Preview --')
-    try:
-        df = load_user_excel()
-        print(df.shape)
-        print(df.head())
-    except Exception as e:
-        print('Could not load user excel:', e)
-    print('\n-- Synthetic Preview --')
-    try:
-        sf = load_synthetic()
-        print(sf.shape)
-        print(sf.head())
-    except Exception as e:
-        print('Could not load synthetic:', e)
-
-if __name__ == '__main__':
-    main_preview()
+def load_amex(amex_dir=None):
+    if amex_dir is None:
+        amex_dir = path_amex_dir()
+    if not os.path.exists(amex_dir):
+        raise FileNotFoundError(f"AmEx folder not found at {amex_dir}")
+    files = [f for f in os.listdir(amex_dir) if f.endswith('.csv')]
+    dfs = {}
+    for f in files:
+        dfs[f] = pd.read_csv(os.path.join(amex_dir, f))
+    return dfs
