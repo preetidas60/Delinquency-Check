@@ -1,41 +1,37 @@
-# Early Risk Signals — Credit Card Delinquency Watch
+# Credit Card Delinquency Prediction
 
-This repo contains code to prototype an early-warning system for credit-card delinquency.
-It includes data-prep, feature engineering, baseline training (Logistic Regression + LightGBM),
-and evaluation.
+This project predicts next-month delinquency using credit behavior data.
 
-## Datasets (existing on this environment)
+## Setup
 
-- Your uploaded Excel: /mnt/data/Credit Card Delinquency Watch.xlsx
-- Synthetic dataset created for development: /mnt/data/synthetic_indian_credit.csv
+1. Create virtual environment:
+   python3 -m venv venv
+   source venv/bin/activate
 
-## Quickstart
-
-1. Create virtualenv and install deps:
-   python -m venv .venv
-   source .venv/bin/activate
+2. Install dependencies:
    pip install -r requirements.txt
 
-2. Place the AmEx Kaggle dataset (optional) in `data/amex/` if you want to run large-scale experiments.
+3. Place datasets:
+   data/user/
+   data/synthetic/
+   data/amex/ (optional)
 
-3. Run the pipeline:
-   bash run_all.sh
+## Train Model
 
-## Files
+python src/train.py
 
-- src/data_prep.py : load sample & synthetic data
-- src/features.py : basic feature helpers
-- src/train.py : trains Logistic Regression and LightGBM (saves models to models/)
-- src/evaluate.py : basic evaluation metrics and Precision@10%
-- notebooks/01_exploration.ipynb : EDA and visualization notebook
+## Evaluate Model
 
-## Algorithms used
+python src/evaluate.py
 
-- Baseline: Logistic Regression (interpretable)
-- Production candidate: LightGBM (gradient boosting)
-- Planned advanced: Survival models, Transformers over transactions, Graph neural nets, Uplift models
+## Explain Model
 
-## Notes
+python src/explain.py
 
-- The provided synthetic dataset allows you to run the pipeline end-to-end while you obtain real datasets (e.g., AmEx Kaggle).
-- I used the synthetic dataset to produce baseline results. Move to real data for production.
+## Run API
+
+uvicorn src.serve_api:app --reload --port 8000
+
+## API Docs
+
+http://localhost:8000/docs
