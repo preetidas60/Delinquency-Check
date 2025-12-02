@@ -13,3 +13,4 @@ transformers
 fastapi
 uvicorn
 pydantic
+kaggle
