@@ -40,7 +40,7 @@ def explain():
     shap_values = explainer.shap_values(X)
 
     shap.summary_plot(shap_values, X, show=False)
-    plt.savefig("shap_summary.png")
+    plt.savefig("images/shap_summary.png")
 
     print("\n📊 SHAP explainability plot saved as shap_summary.png")
 

@@ -198,9 +198,15 @@ Example metadata:
 
 ---
 
-## 📊 Model Evaluation
+# 📊 Model Evaluation & Explainability
 
-Run evaluation:
+This section demonstrates how we evaluate, validate, and explain the trained credit-risk model — following real banking standards (HDFC/RBI model governance guidelines).
+
+---
+
+## 🔍 1. Single-Run Evaluation (AUC Metric)
+
+Run a standard evaluation using any dataset (Synthetic, Excel, or AmEx):
 
 ```bash
 python -m src.evaluate
@@ -213,41 +219,123 @@ Example output:
 📊 Evaluation AUC on 'amex': 0.9350
 ```
 
-### ❓ Why AUC (and not Accuracy)?
+### ⭐ What Is AUC and Why Banks Use It?
 
-| Metric   | Issue                                                 |
-| -------- | ----------------------------------------------------- |
-| Accuracy | Fails on imbalanced datasets (e.g., 95% non-defaults) |
-| AUC      | Measures ranking ability → critical for EWS decisions |
+| Metric   | Limitation                                                                      |
+| -------- | ------------------------------------------------------------------------------- |
+| Accuracy | Misleading for imbalanced datasets (e.g., 95% non-defaulters → fake high score) |
+| **AUC**  | Measures ranking ability → _“Does the model score defaulters higher?”_          |
 
-Banks ALWAYS use:
+AUC is the **industry standard** metric used by:
 
-- 📈 AUC
-- 📊 KS statistic
-- 📉 Gini coefficient
+- 🔵 HDFC EWS (Early Warning Systems)
+- 🔵 SBI/ICICI Risk Decision Engines
+- 🔵 RBI Model Governance teams
 
-AUC is the clearest industry benchmark for model performance.
+### ✔ Why AUC is Better Here
+
+- Works on imbalanced datasets
+- Reflects real-world credit-risk behavior
+- Determines how well the model separates _risky vs safe_ customers
+- Used for downstream processes like cutoff setting (e.g., KS/Gini thresholds)
 
 ---
 
-## 📈 Explainability (SHAP)
+## 🔍 2. Explainability Using SHAP
 
-Run:
+Explainability is mandatory for model governance and internal audit.
+
+Generate SHAP summary:
 
 ```bash
 python -m src.explain
 ```
 
-This generates:
+This produces:
 
 - `shap_summary.png`
 
-### 💡 Why SHAP?
+### 📈 SHAP Summary Plot
 
-✔️ Required by model validation teams  
-✔️ Helps business teams trust the model  
-✔️ Shows feature impact direction  
-✔️ Supports regulator audits (RBI model governance)
+![SHAP Feature Importance](images/shap_summary.png)
+
+### ✔ Why SHAP Is Required in Banking
+
+- Required by **Model Validation teams**
+- Shows feature contribution direction (↑ increases risk, ↓ decreases risk)
+- Ensures transparency for committees (Credit, Risk, Compliance)
+- Helps identify bias, drift, and model misuse
+
+---
+
+## 🔍 3. Model Stability Test (AUC Variance Check)
+
+Stability is a **mandatory requirement** in financial risk modeling.
+
+Run multi-sample evaluation:
+
+```bash
+python -m src.evaluate_multiple
+```
+
+This runs **5 independent evaluations** on randomly sampled AmEx chunks (≈55k rows each).
+
+Example result:
+
+```
+Run 1: AUC = 0.93344
+Run 2: AUC = 0.93389
+Run 3: AUC = 0.93354
+Run 4: AUC = 0.93586
+Run 5: AUC = 0.93431
+
+Mean AUC: 0.93461
+Std Dev: 0.00094
+Model Stability: VERIFIED
+```
+
+### ⭐ Why Stability Matters (HDFC Requirement)
+
+Banks require a model to perform consistently:
+
+- across **different customer segments**
+- across **random samples**
+- across **time windows**
+
+Low variance means:
+
+✔ No overfitting  
+✔ High generalization  
+✔ Predictable performance  
+✔ Model is safe for production rollout
+
+---
+
+## 📉 AUC Stability Visualization
+
+![Model Stability](images/model_stability.png)
+
+This visual shows AUC performance across multiple random samples, proving:
+
+- Extremely low variance
+- High robustness
+- Consistent predictive power
+
+This is exactly what credit-risk teams expect in production EWS models.
+
+---
+
+## ✅ Summary of Model Evaluation Strengths
+
+| Component                | Why It Matters in Banking                           |
+| ------------------------ | --------------------------------------------------- |
+| **AUC-based Evaluation** | Industry standard for ranking credit-risk customers |
+| **SHAP Explainability**  | Required by RBI, auditors, and risk committees      |
+| **Stability Testing**    | Ensures robustness, prevents model failures         |
+| **AmEx Chunk Sampling**  | Handles 11M+ rows safely on any machine             |
+| **Versioned Models**     | Reproducibility & auditability                      |
+
+Your model evaluation process now matches **real enterprise-grade credit risk modeling practices**.
 
 ---
 

@@ -1,8 +1,27 @@
+# Python cache
 __pycache__/
+*.pyc
+
+# Virtual environments
 venv/
 .venv/
-models/
-data
+
+# Ignore model files but keep the folder
+models/*
+!models/.gitkeep
+
+# Ignore ONLY CSV/ZIP files inside data folder
+data/**/*.csv
+data/**/*.zip
+
+# Keep directory structure
+!data/
+!data/user/
+!data/synthetic/
+!data/amex/
+
+# Allow gitkeep placeholders
+!*.gitkeep
+
+# Kaggle Credentials
 kaggle.json
-data/amex/
-*.pyc
